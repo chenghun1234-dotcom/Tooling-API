@@ -6,7 +6,7 @@
 class PrivacyEngine {
     constructor() {
         this.isWasmLoaded = false;
-        this.workerUrl = "https://privacy-scrub-worker.eieu5683.workers.dev"; // Production Worker URL
+        this.workerUrl = "https://toolingapi.chenghun1234.workers.dev"; // Production Worker URL
         this.wasmInstance = null;
         this.isFallback = false;
         

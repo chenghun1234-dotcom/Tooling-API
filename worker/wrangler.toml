@@ -1,4 +1,4 @@
-name = "privacy-scrub-worker"
+name = "toolingapi"
 main = "src/index.js"
 compatibility_date = "2024-04-01"
 account_id = "245c33f95e6a269097d29dee85ac3728"
