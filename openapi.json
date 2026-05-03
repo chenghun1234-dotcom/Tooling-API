@@ -1,0 +1,121 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Privacy-Scrub API",
+    "description": "High-performance, edge-native PII de-identification engine using Rust-Wasm and Cloudflare Workers.",
+    "version": "1.1.0",
+    "contact": {
+      "name": "Privacy-Scrub Support",
+      "url": "https://github.com/chenghun1234-dotcom/Tooling-API"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://toolingapi.chenghun1234.workers.dev",
+      "description": "Production Edge Server"
+    }
+  ],
+  "paths": {
+    "/v1/wasm/fetch": {
+      "get": {
+        "tags": ["Tooling API"],
+        "summary": "Fetch Wasm Metadata",
+        "description": "Retrieves metadata for the on-device scrubbing engine, including the binary URL and supported patterns.",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved Wasm metadata",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "version": { "type": "string", "example": "1.1.0" },
+                    "wasm_url": { "type": "string", "example": "https://toolingapi.chenghun1234.workers.dev/v1/wasm/logic.wasm" },
+                    "supported_patterns": { 
+                      "type": "array", 
+                      "items": { "type": "string" },
+                      "example": ["email", "phone", "rrn", "address", "name", "credit-card"]
+                    },
+                    "mode": { "type": "string", "example": "direct-bundle" },
+                    "timestamp": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/wasm/logic.wasm": {
+      "get": {
+        "tags": ["Tooling API"],
+        "summary": "Download Wasm Binary",
+        "description": "Downloads the compiled Rust-Wasm module for client-side execution.",
+        "responses": {
+          "200": {
+            "description": "The Wasm binary file",
+            "content": {
+              "application/wasm": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/scrub": {
+      "post": {
+        "tags": ["Scrubbing"],
+        "summary": "Server-side Hybrid Scrubbing",
+        "description": "Fallback endpoint for masking PII on the server-side when Wasm execution is not possible on the client.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["text"],
+                "properties": {
+                  "text": { 
+                    "type": "string", 
+                    "description": "The raw text containing sensitive PII.",
+                    "example": "Contact me at 010-1234-5678 or john@example.com"
+                  },
+                  "config": {
+                    "type": "object",
+                    "description": "Configuration to enable/disable specific masking categories.",
+                    "properties": {
+                      "email": { "type": "boolean", "default": true },
+                      "phone": { "type": "boolean", "default": true },
+                      "rrn": { "type": "boolean", "default": true }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Scrubbed text result",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "scrubbed": { "type": "string", "example": "Contact me at [PHONE] or [EMAIL]" },
+                    "mode": { "type": "string", "example": "hybrid-fallback-worker" },
+                    "processed_at": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
