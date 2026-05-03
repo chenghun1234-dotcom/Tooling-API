@@ -1,14 +1,10 @@
-/**
- * Privacy-Scrub Worker (v1.1.0)
- * Serves Wasm modules and provides Hybrid Fallback API.
- */
+import wasmModule from '../logic.wasm'; // Linked via build process
 
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // Enhanced CORS Headers for Tooling API delivery
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -20,13 +16,13 @@ export default {
       return new Response(null, { headers: corsHeaders });
     }
 
-    // 1. Fetch Metadata: Informs the client where to find the latest Wasm logic
+    // 1. Fetch Metadata
     if (path === '/v1/wasm/fetch') {
       const metadata = {
-        version: env.WASM_VERSION || "1.0.0",
+        version: env.WASM_VERSION || "1.1.0",
         wasm_url: `${url.origin}/v1/wasm/logic.wasm`,
-        supported_patterns: ["email", "phone", "kr-rrn", "credit-card", "ip", "address", "name"],
-        checksum: "sha256:7e4e892c...", // Should be dynamically generated in production
+        supported_patterns: ["email", "phone", "rrn", "address", "name", "credit-card"],
+        mode: "direct-bundle",
         timestamp: new Date().toISOString()
       };
       return new Response(JSON.stringify(metadata), {
@@ -34,58 +30,27 @@ export default {
       });
     }
 
-    // 2. Serve Wasm Binary: Delivered to client for on-device execution
+    // 2. Serve Wasm Binary: Delivered directly from the Worker bundle
     if (path === '/v1/wasm/logic.wasm') {
-      const version = env.WASM_VERSION || "1.0.0";
-      const objectName = `logic-${version}.wasm`;
-      
-      // Cache-Control is critical for "Tooling API" performance
-      const cache = caches.default;
-      let response = await cache.match(request);
-      if (response) return response;
-
-      // Try fetching from R2 (if bound)
-      try {
-        if (!env.WASM_BUCKET) {
-           return new Response("Wasm storage not yet configured", { status: 503, headers: corsHeaders });
+      return new Response(wasmModule, {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/wasm',
+          'X-Wasm-Version': env.WASM_VERSION || "1.1.0",
+          'Cache-Control': 'public, max-age=31536000, immutable',
         }
-        const object = await env.WASM_BUCKET.get(objectName);
-        if (!object) {
-          return new Response("Wasm module not found in storage", { 
-            status: 404, 
-            headers: corsHeaders 
-          });
-        }
-
-        response = new Response(object.body, {
-          headers: {
-            ...corsHeaders,
-            'Content-Type': 'application/wasm',
-            'X-Wasm-Version': version,
-            'Cache-Control': 'public, max-age=31536000, immutable',
-          }
-        });
-
-        ctx.waitUntil(cache.put(request, response.clone()));
-        return response;
-      } catch (err) {
-        return new Response("Storage error: " + err.message, { status: 500, headers: corsHeaders });
-      }
+      });
     }
 
-    // 3. Hybrid Fallback: For clients that cannot run Wasm locally
+    // 3. Hybrid Fallback (Server-side)
     if (path === '/v1/scrub' && request.method === 'POST') {
       try {
         const { text, config = {} } = await request.json();
-        
-        // Server-side scrubbing logic
-        // In production, we'd use the same Wasm module via Worker Wasm imports
-        // for 100% deterministic results between client and server.
         const scrubbed = hybridScrub(text, config);
         
         return new Response(JSON.stringify({ 
           scrubbed, 
-          mode: "hybrid-fallback",
+          mode: "hybrid-fallback-worker",
           processed_at: new Date().toISOString()
         }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -98,7 +63,7 @@ export default {
       }
     }
 
-    return new Response("Privacy-Scrub Tooling API Gateway Active", { 
+    return new Response("Privacy-Scrub Tooling API (Direct Bundle Mode) Active", { 
       status: 200,
       headers: corsHeaders
     });

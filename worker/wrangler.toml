@@ -1,17 +1,9 @@
 name = "toolingapi"
 main = "src/index.js"
 compatibility_date = "2024-04-01"
-account_id = "245c33f95e6a269097d29dee85ac3728"
+account_id = "8253b30c0106148cfe2add2a62792196"
 
 [vars]
 WASM_VERSION = "1.0.0"
 
-# KV for faster metadata access
-[[kv_namespaces]]
-binding = "WASM_KV"
-id = "74c89a9eeaa84d48ab77f8b9b7458b12"
-
-# R2 Bucket for Wasm storage
-[[r2_buckets]]
-binding = "WASM_BUCKET"
-bucket_name = "privacy-scrub-wasm"
+# Wasm Direct Bundle Mode: No external storage bindings required
