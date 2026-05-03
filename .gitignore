@@ -1,0 +1,16 @@
+# Rust
+/wasm-engine/target
+/wasm-engine/pkg
+
+# Node.js
+node_modules
+.wrangler
+dist
+
+# Environment
+.env
+.dev.vars
+
+# OS
+.DS_Store
+Thumbs.db

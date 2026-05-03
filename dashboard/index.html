@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy-Scrub | On-Device PII De-identification</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="glass-bg"></div>
+    
+    <nav>
+        <div class="logo">
+            <i data-lucide="shield-check" class="icon-primary"></i>
+            <span>Privacy-Scrub <small>v1.0.0</small></span>
+        </div>
+        <div class="status-badge" id="wasm-status">
+            <span class="dot"></span> Wasm Not Loaded
+        </div>
+    </nav>
+
+    <main>
+        <header>
+            <h1>On-Device <span>Intelligence</span></h1>
+            <p>De-identify sensitive data locally before it ever touches the cloud. Zero-Knowledge, Zero-Latency, Zero-Cost.</p>
+        </header>
+
+        <section class="playground">
+            <div class="card config-card">
+                <div class="card-header">
+                    <i data-lucide="settings"></i>
+                    <h3>Masking Configuration</h3>
+                </div>
+                <div class="config-grid">
+                    <label class="config-item">
+                        <input type="checkbox" id="cfg-email" checked> <span>Email</span>
+                    </label>
+                    <label class="config-item">
+                        <input type="checkbox" id="cfg-phone" checked> <span>Phone Number</span>
+                    </label>
+                    <label class="config-item">
+                        <input type="checkbox" id="cfg-rrn" checked> <span>Resident Number (RRN)</span>
+                    </label>
+                    <label class="config-item">
+                        <input type="checkbox" id="cfg-address" checked> <span>Address</span>
+                    </label>
+                    <label class="config-item">
+                        <input type="checkbox" id="cfg-name" checked> <span>Name</span>
+                    </label>
+                    <label class="config-item">
+                        <input type="checkbox" id="cfg-card" checked> <span>Credit Card</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="card input-card">
+                <div class="card-header">
+                    <i data-lucide="file-text"></i>
+                    <h3>Raw Input Data</h3>
+                </div>
+                <textarea id="input-text" placeholder="Enter text with names, emails, or phone numbers... (e.g. My email is john@example.com and phone is 010-1234-5678)"></textarea>
+                <div class="controls">
+                    <button id="btn-scrub" class="btn-primary">
+                        <i data-lucide="zap"></i> Scrub Locally
+                    </button>
+                    <button id="btn-load-wasm" class="btn-secondary">
+                        <i data-lucide="download-cloud"></i> Initialize Engine
+                    </button>
+                    <button id="btn-run-test" class="btn-ghost">
+                        <i data-lucide="test-tube"></i> Internal Test
+                    </button>
+                </div>
+            </div>
+
+            <div class="card output-card">
+                <div class="card-header">
+                    <i data-lucide="shield-alert"></i>
+                    <h3>Protected Output</h3>
+                </div>
+                <div id="output-text" class="output-area">
+                    <span class="placeholder">Awaiting input...</span>
+                </div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <span class="label">PII Detected</span>
+                        <span class="value" id="pii-count">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="label">Latency</span>
+                        <span class="value" id="latency">0ms</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="feature-item">
+                <i data-lucide="cpu"></i>
+                <h4>Wasm Powered</h4>
+                <p>Rust-compiled logic running at near-native speeds in your browser.</p>
+            </div>
+            <div class="feature-item">
+                <i data-lucide="server-off"></i>
+                <h4>Zero-Knowledge</h4>
+                <p>Data never leaves your device. No logs, no leaks, no risks.</p>
+            </div>
+            <div class="feature-item">
+                <i data-lucide="globe"></i>
+                <h4>Edge Native</h4>
+                <p>Served via Cloudflare Workers for global ultra-low latency.</p>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
+</body>
+</html>

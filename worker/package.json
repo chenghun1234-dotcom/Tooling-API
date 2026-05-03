@@ -1,0 +1,13 @@
+{
+  "name": "privacy-scrub-worker",
+  "version": "1.1.0",
+  "description": "Tooling API for Privacy-Scrub Wasm delivery",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "npx wrangler dev",
+    "deploy": "npx wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^3.0.0"
+  }
+}
