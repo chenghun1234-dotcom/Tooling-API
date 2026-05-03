@@ -4,8 +4,8 @@
   "description": "Tooling API for Privacy-Scrub Wasm delivery",
   "main": "src/index.js",
   "scripts": {
-    "dev": "copy ..\\wasm-engine\\pkg\\privacy_scrub_bg.wasm .\\logic.wasm && npx wrangler dev",
-    "deploy": "copy ..\\wasm-engine\\pkg\\privacy_scrub_bg.wasm .\\logic.wasm && npx wrangler deploy"
+    "dev": "copy ..\\wasm-engine\\pkg\\wasm_engine_bg.wasm .\\logic.wasm && npx wrangler dev",
+    "deploy": "copy ..\\wasm-engine\\pkg\\wasm_engine_bg.wasm .\\logic.wasm && npx wrangler deploy"
   },
   "devDependencies": {
     "wrangler": "^3.0.0"

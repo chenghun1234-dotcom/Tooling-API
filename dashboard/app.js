@@ -32,9 +32,8 @@ class PrivacyEngine {
             console.log("📦 Loaded Wasm Metadata:", metadata);
 
             // 2. Load Wasm Logic via wasm-bindgen glue
-            // We expect the glue JS to be available at /pkg/privacy_scrub.js
-            // or served by the worker. For this demo, we'll use the one from our build.
-            const { default: initWasm, scrub_text_custom } = await import('./pkg/privacy_scrub.js');
+            // We expect the glue JS to be available at /pkg/wasm_engine.js
+            const { default: initWasm, scrub_text_custom } = await import('./pkg/wasm_engine.js');
             
             // Initialize the Wasm module with the binary URL from Worker
             await initWasm(metadata.wasm_url);
